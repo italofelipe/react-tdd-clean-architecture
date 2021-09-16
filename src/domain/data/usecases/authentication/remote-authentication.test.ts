@@ -1,4 +1,5 @@
 import faker from 'faker'
+import { mockAuthentication } from '../../../../domain/test/mock-authentication'
 import { HttpPostClientSpy } from '../../test/mock-http-client'
 import { RemoteAuthentication } from './remote-authentication'
 
@@ -19,7 +20,15 @@ describe('RemoteAuthentication', () => {
   it('Should call HttpPostClient with correct URL', async () => {
     const url = faker.internet.url()
     const { httpPostClientSpy, sut } = makeSut(url)
-    await sut.auth()
+    await sut.auth(mockAuthentication())
     expect(httpPostClientSpy.url).toBe(url)
+  })
+  it('Should call HttpPostClient with correct Body', async () => {
+    // Para fazer uma autenticação, é necessário inserir email e senha, logo, é isso o que faremos agora.
+    const { httpPostClientSpy, sut } = makeSut()
+    const authenticationParams = mockAuthentication()
+    await sut.auth(authenticationParams)
+
+    expect(httpPostClientSpy.body).toEqual(authenticationParams)
   })
 })
